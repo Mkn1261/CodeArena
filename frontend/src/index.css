@@ -1,0 +1,69 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: false;
+}
+
+@plugin "daisyui/theme" {
+  name: "CodeArena";
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: oklch(18% 0.02 45);
+  --color-base-200: oklch(14% 0.018 45);
+  --color-base-300: oklch(10% 0.015 45);
+  --color-base-content: oklch(96% 0.008 45);
+
+  --color-primary: oklch(74% 0.22 52);
+  --color-primary-content: oklch(16% 0.02 52);
+  --color-secondary: oklch(68% 0.19 42);
+  --color-secondary-content: oklch(15% 0.02 42);
+  --color-accent: oklch(80% 0.17 68);
+  --color-accent-content: oklch(18% 0.025 68);
+  --color-neutral: oklch(8% 0.01 45);
+  --color-neutral-content: oklch(94% 0.008 45);
+  --color-info: oklch(70% 0.15 230);
+  --color-info-content: oklch(16% 0.02 230);
+  --color-success: oklch(72% 0.19 60);
+  --color-success-content: oklch(16% 0.02 60);
+  --color-warning: oklch(84% 0.17 78);
+  --color-warning-content: oklch(20% 0.03 78);
+  --color-error: oklch(66% 0.21 30);
+  --color-error-content: oklch(98% 0.008 30);
+
+  --radius-selector: 1rem;
+  --radius-field: 0.85rem;
+  --radius-box: 1.4rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* Add cursor pointer to buttons by default - this is coming from tailwind docs */
+@layer base {
+  html {
+    background:
+      radial-gradient(circle at top left, oklch(50% 0.19 52 / 0.24), transparent 32%),
+      radial-gradient(circle at top right, oklch(42% 0.16 40 / 0.2), transparent 28%),
+      linear-gradient(180deg, oklch(13% 0.018 45), oklch(8% 0.012 45));
+    min-height: 100%;
+  }
+
+  body {
+    min-height: 100vh;
+    background: transparent;
+    color: var(--color-base-content);
+  }
+
+  ::selection {
+    background: oklch(74% 0.22 52 / 0.35);
+    color: var(--color-base-content);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
