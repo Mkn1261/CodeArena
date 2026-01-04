@@ -2,15 +2,35 @@ import mongoose from "mongoose";
 
 import { ENV } from "./env.js";
 
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
 export const connectDB = async () => {
-  try {
-    if (!ENV.DB_URL) {
-      throw new Error("DB_URL is not defined in environment variables");
-    }
-    const conn = await mongoose.connect(ENV.DB_URL);
-    console.log("✅ Connected to MongoDB:", conn.connection.host);
-  } catch (error) {
-    console.error("❌ Error connecting to MongoDB", error);
-    process.exit(1); // 0 means success, 1 means failure
+  if (!ENV.DB_URL) {
+    throw new Error("DB_URL is not defined in environment variables");
   }
+
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    cached.promise = mongoose
+      .connect(ENV.DB_URL)
+      .then((conn) => {
+        console.log("Connected to MongoDB:", conn.connection.host);
+        return conn;
+      })
+      .catch((error) => {
+        cached.promise = null;
+        console.error("Error connecting to MongoDB", error);
+        throw error;
+      });
+  }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
 };
