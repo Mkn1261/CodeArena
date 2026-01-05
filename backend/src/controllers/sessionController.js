@@ -1,4 +1,4 @@
-import { chatClient, streamClient } from "../lib/stream.js";
+import { getChatClient, getStreamClient } from "../lib/stream.js";
 import Session from "../models/Session.js";
 
 export async function createSession(req, res) {
@@ -18,7 +18,7 @@ export async function createSession(req, res) {
     const session = await Session.create({ problem, difficulty, host: userId, callId });
 
     // create stream video call
-    await streamClient.video.call("default", callId).getOrCreate({
+    await getStreamClient().video.call("default", callId).getOrCreate({
       data: {
         created_by_id: clerkId,
         custom: { problem, difficulty, sessionId: session._id.toString() },
@@ -26,7 +26,7 @@ export async function createSession(req, res) {
     });
 
     // chat messaging
-    const channel = chatClient.channel("messaging", callId, {
+    const channel = getChatClient().channel("messaging", callId, {
       name: `${problem} Session`,
       created_by_id: clerkId,
       members: [clerkId],
@@ -116,7 +116,7 @@ export async function joinSession(req, res) {
     session.participant = userId;
     await session.save();
 
-    const channel = chatClient.channel("messaging", session.callId);
+    const channel = getChatClient().channel("messaging", session.callId);
     await channel.addMembers([clerkId]);
 
     res.status(200).json({ session });
@@ -146,11 +146,11 @@ export async function endSession(req, res) {
     }
 
     // delete stream video call
-    const call = streamClient.video.call("default", session.callId);
+    const call = getStreamClient().video.call("default", session.callId);
     await call.delete({ hard: true });
 
     // delete stream chat channel
-    const channel = chatClient.channel("messaging", session.callId);
+    const channel = getChatClient().channel("messaging", session.callId);
     await channel.delete();
 
     session.status = "completed";
